@@ -1,0 +1,7 @@
+{
+    "host":"management-tutorial.co67lmt8ztpp.ap-southeast-1.rds.amazonaws.com",
+    "user":"user",
+    "password":"11111111",
+    "port":3306,
+    "database":"easystudydemo1"
+}
