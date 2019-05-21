@@ -91,6 +91,8 @@ app.post('/api/signup',function(req,res){
     });
 });
 
+
+
 app.post('/api/createclass',function(req,res){
     var sql = 'INSERT INTO class(classname,classdesc,classtype,author_id,author_name) VALUES(?,?,?,?,?)';
     var classname = req.body.classname;
