@@ -70,6 +70,40 @@ app.post('/api/authsignin',function(req,res){
     });
 });
 
+app.post('/api/signup',function(req,res){
+    var sql = 'SELECT * FROM user_manager where email=?';
+    var email = req.body.email;
+    var params = [email]
+    conn.query(sql,params,function(err,rows,fields){
+        if(rows[0]!=null){
+            res.send(rows);
+        }else{
+            var sql = 'INSERT INTO user_manager(email, name, password, gender) VALUES(?,?,?,?)';
+            var name = req.body.username;
+            var password = req.body.password;
+            var gender = req.body.gender;
+            var params = [email, name, password, gender];
+
+            conn.query(sql, params, function(err, rows, fields){
+                res.send(rows);
+            });
+        }
+    });
+});
+
+app.post('/api/createclass',function(req,res){
+    var sql = 'INSERT INTO class(classname,classdesc,classtype,author_id,author_name) VALUES(?,?,?,?,?)';
+    var classname = req.body.classname;
+    var classdesc = req.body.classdesc;
+    var classtype = req.body.classtype;
+    var author_id = req.body.author_id;
+    var author_name = req.body.author_name;
+    var params = [classname,classdesc,classtype,author_id,author_name];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
 app.listen(port, function(){
     console.log('server is running on 4000port');
 });
