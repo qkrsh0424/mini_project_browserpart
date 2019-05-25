@@ -17,7 +17,10 @@ const conn = mysql.createConnection({
     database:conf.database
 });
 
-conn.connect(function(){
+conn.connect(function(err){
+    if(err){
+        console.log('error connect');
+    }
     console.log("db connected");
 });
 
@@ -47,7 +50,7 @@ app.get('/api/class/:classid',function(req,res){
 });
 
 app.get('/api/classlist/:userid',function(req,res){
-    var sql = 'SELECT * FROM class WHERE author_id=?';
+    var sql = 'SELECT * FROM class WHERE author_id=? and isDeleted=0';
     var userid = req.params.userid;
     var param = [userid];
     conn.query(sql,param,function(err, rows, fields){
@@ -91,8 +94,6 @@ app.post('/api/signup',function(req,res){
     });
 });
 
-
-
 app.post('/api/createclass',function(req,res){
     var sql = 'INSERT INTO class(classname,classdesc,classtype,author_id,author_name) VALUES(?,?,?,?,?)';
     var classname = req.body.classname;
@@ -101,6 +102,47 @@ app.post('/api/createclass',function(req,res){
     var author_id = req.body.author_id;
     var author_name = req.body.author_name;
     var params = [classname,classdesc,classtype,author_id,author_name];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
+app.delete('/api/deleteclass/:id',function(req,res){
+    var classid = req.params.id;
+    var sql = 'UPDATE class SET isDeleted=1 WHERE id=?';
+    var params = [classid];
+    conn.query(sql,params,function(err,rows,fields){
+        if(err){
+            console.log(err);
+        }else{
+            res.send(rows);
+        }
+    });
+});
+
+app.get('/api/lecturebig/:classid',function(req,res){
+    var classid = req.params.classid;
+    var sql = 'SELECT * FROM lecture_big WHERE class_id=?';
+    var params = [classid];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
+app.get('/api/lecturesmall/:lecture_b_id',function(req,res){
+    var lecture_b_id = req.params.lecture_b_id;
+    var sql = 'SELECT * FROM lecture_small WHERE lecture_b_id = ?';
+    var params = [lecture_b_id];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
+app.post('/api/lecturebigadd',function(req,res){
+    var lecture_b_title = req.body.lecture_b_title;
+    var class_id = req.body.class_id;
+    var sql = 'INSERT INTO lecture_big(class_id,lecture_b_title) VALUES(?,?)';
+    var params = [class_id,lecture_b_title];
     conn.query(sql,params,function(err,rows,fields){
         res.send(rows);
     });
