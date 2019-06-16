@@ -122,19 +122,39 @@ app.delete('/api/deleteclass/:id',function(req,res){
 
 app.get('/api/lecturebig/:classid',function(req,res){
     var classid = req.params.classid;
-    var sql = 'SELECT * FROM lecture_big WHERE class_id=?';
+    var sql = 'SELECT * FROM lecture_big WHERE class_id=? AND isDeleted=0';
     var params = [classid];
     conn.query(sql,params,function(err,rows,fields){
         res.send(rows);
     });
 });
 
+app.get('/api/lecturebig/:classid/:lecture_b_id',function(req,res){
+    var classid = req.params.classid;
+    var lecture_b_id = req.params.lecture_b_id;
+    var sql = 'SELECT * FROM lecture_big WHERE class_id=? AND lecture_b_id=? AND isDeleted=0';
+    var params = [classid,lecture_b_id];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows[0]);
+    });
+});
+
 app.get('/api/lecturesmall/:lecture_b_id',function(req,res){
     var lecture_b_id = req.params.lecture_b_id;
-    var sql = 'SELECT * FROM lecture_small WHERE lecture_b_id = ?';
+    var sql = 'SELECT * FROM lecture_small WHERE lecture_b_id = ? AND isDeleted=0';
     var params = [lecture_b_id];
     conn.query(sql,params,function(err,rows,fields){
         res.send(rows);
+    });
+});
+
+app.get('/api/lecturesmall/:lecture_b_id/:lecture_s_id',function(req,res){
+    var lecture_b_id = req.params.lecture_b_id;
+    var lecture_s_id = req.params.lecture_s_id;
+    var sql = 'SELECT * FROM lecture_small WHERE lecture_b_id=? AND lecture_s_id=? AND isDeleted=0';
+    var params = [lecture_b_id, lecture_s_id];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows[0]);
     });
 });
 
@@ -145,6 +165,76 @@ app.post('/api/lecturebigadd',function(req,res){
     var params = [class_id,lecture_b_title];
     conn.query(sql,params,function(err,rows,fields){
         res.send(rows);
+    });
+});
+
+//source List
+app.get('/api/sourcelist/:lecture_s_id',function(req,res){
+    var lecture_s_id = req.params.lecture_s_id;
+    var sql = 'SELECT * FROM lecture_source WHERE lecture_s_id=? AND isDeleted=0';
+    var params = [lecture_s_id];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
+app.post('/api/addVideoUrl/:lecture_s_id/:item',function(req,res){
+    var lecture_s_id = req.params.lecture_s_id;
+    var item = req.params.item;
+    var material = req.body.materialURL;
+    var sql = 'INSERT INTO lecture_source(lecture_s_id, material, item) VALUES(?,?,?)';
+    var param = [lecture_s_id,material,item];
+
+    conn.query(sql, param, function(err, rows, fields){
+        res.send(rows);
+    });
+});
+
+app.post('/api/addLectureSamll/:classid/:lecture_b_id',function(req,res){
+    var class_id = req.params.classid;
+    var lecture_b_id = req.params.lecture_b_id;
+    var lecture_s_title = req.body.lecturetitle;
+    var lecture_s_desc = req.body.lecturedesc;
+    var sql = 'INSERT INTO lecture_small(class_id,lecture_b_id,lecture_s_title,lecture_s_desc) VALUES(?,?,?,?)';
+    var params = [class_id,lecture_b_id,lecture_s_title,lecture_s_desc];
+
+    // console.log(class_id);
+    // console.log(lecture_b_id);
+    // console.log(lecture_s_title);
+    // console.log(lecture_s_desc);
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
+
+//Delete LectureBig API
+app.delete('/api/deleteBigLecture/:lecture_b_id',function(req,res){
+    var lecture_b_id = req.params.lecture_b_id;
+    var sql = 'UPDATE lecture_big SET isDeleted=1 WHERE lecture_b_id=?';
+    var params = [lecture_b_id];
+    
+    conn.query(sql,params,function(err,rows,fields){
+        if(err){
+            console.log(err);
+        }else{
+            res.send(rows);
+        }
+    });
+});
+
+//Delete LectureSmall API
+app.delete('/api/deleteSmallLecture/:lecture_s_id',function(req,res){
+    var lecture_s_id = req.params.lecture_s_id;
+    var sql = 'UPDATE lecture_small SET isDeleted=1 WHERE lecture_s_id=?';
+    var params = [lecture_s_id];
+    
+    conn.query(sql,params,function(err,rows,fields){
+        if(err){
+            console.log(err);
+        }else{
+            res.send(rows);
+        }
     });
 });
 
