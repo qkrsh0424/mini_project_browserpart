@@ -238,6 +238,76 @@ app.delete('/api/deleteSmallLecture/:lecture_s_id',function(req,res){
     });
 });
 
+//Get Student List 
+app.get('/api/studentlist/:classid',function(req,res){
+    var classid = req.params.classid;
+    var sql = 'SELECT * FROM user_student AS us JOIN class_student AS cs ON us.student_id=cs.student_id AND cs.class_id=?';
+    // var sql = 'SELECT * FROM class_student WHERE class_id=?';
+    var params = [classid];
+    conn.query(sql,params,function(err,rows,fields){
+        // console.log(rows);
+        res.send(rows);
+    });
+});
+
+
+//Get Homework List
+app.get('/api/homeworkList/:classid',function(req,res){
+    var class_id = req.params.classid;
+    var sql = 'SELECT * FROM homework WHERE class_id=? AND isDeleted=0';
+    var params = [class_id];
+    
+    conn.query(sql,params,function(err, rows, fields){
+        res.send(rows);
+    });
+});
+
+//Create Homework
+app.post('/api/createHomework/:classid',function(req,res){
+    var class_id = req.params.classid;
+    var title = req.body.homeworktitle;
+    var text = req.body.body;
+    // console.log(class_id);
+    // console.log(title);
+    // console.log(text);
+    var sql = 'INSERT INTO homework(class_id,homework_title,homework_desc) VALUES(?,?,?)';
+    var params = [class_id,title,text];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
+app.get('/api/homework/:homework_id',function(req,res){
+    var homework_id = req.params.homework_id;
+    var sql = 'SELECT * FROM homework WHERE homework_id=? AND isDeleted=0';
+    var params = [homework_id];
+    
+    conn.query(sql,params,function(err, rows, fields){
+        // console.log(rows);
+        res.send(rows);
+    });
+});
+
+
+//example richtext
+
+app.get('/api/richtext',function(req,res){
+    var sql = 'SELECT * FROM richex';
+    conn.query(sql,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
+
+app.post('/api/richtext',function(req,res){
+    var text = req.body.body;
+    var sql = 'INSERT INTO richex(body) VALUES(?)';
+    var params = [text];
+    conn.query(sql,params,function(err,rows,fields){
+        res.send(rows);
+    });
+});
+
 app.listen(port, function(){
     console.log('server is running on 4000port');
 });
