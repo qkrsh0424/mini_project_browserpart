@@ -20,8 +20,9 @@ const conn = mysql.createConnection({
 conn.connect(function(err){
     if(err){
         console.log('error connect');
+    }else{
+        console.log("db connected");
     }
-    console.log("db connected");
 });
 
 app.get('/api/user_m',function(req,res){
@@ -284,6 +285,31 @@ app.get('/api/homework/:homework_id',function(req,res){
     
     conn.query(sql,params,function(err, rows, fields){
         // console.log(rows);
+        res.send(rows);
+    });
+});
+
+//Get Debate Message
+app.get('/api/debate/:classid',function(req,res){
+    var class_id = req.params.classid;
+    var sql = 'SELECT * FROM debate WHERE class_id=?';
+    var params = [class_id];
+    conn.query(sql,params,function(err, rows, fields){
+        // console.log(rows);
+        res.send(rows);
+    });
+});
+
+//Post Debate Message
+app.post('/api/debate/:classid',function(req,res){
+    var class_id = req.params.classid;
+    var user_id = req.body.user_id;
+    var user_name = req.body.user_name;
+    var user_type = req.body.user_type;
+    var content = req.body.content;
+    var sql = 'INSERT INTO debate(class_id,user_id,user_name,user_type,content) VALUES(?,?,?,?,?)';
+    var params = [class_id, user_id, user_name, user_type,content];
+    conn.query(sql,params,function(err, rows, fields){
         res.send(rows);
     });
 });
